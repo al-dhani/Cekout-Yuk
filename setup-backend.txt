@@ -1,0 +1,90 @@
+SET UP BACKEND
+
+
+
+Buat folder server, kalo belum ada package.json
+
+(npm init -y)
+
+
+Install semua package backend
+npm install express cors dotenv mysql2
+npm install --save-dev nodemon
+
+install keperluan login
+npm install bcryptjs jsonwebtoken
+
+
+buat struktur folder
+server/
+│
+├── .env
+├── server.js
+└── db/
+    └── connection.js
+
+
+isi file .env
+PORT=5000
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=
+DB_NAME=db_bebas
+
+
+
+
+isi connection.js:
+
+import mysql from "mysql2";
+import dotenv from "dotenv";
+dotenv.config();
+
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+});
+
+db.connect((err) => {
+  if (err) {
+    console.error("Database connection failed:", err);
+  } else {
+    console.log("Connected to MySQL ✅");
+  }
+});
+
+export default db;
+
+
+
+isi dari file server.js:
+
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import db from "./db/connection.js";
+
+dotenv.config();
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// contoh route awal
+app.get("/", (req, res) => {
+res.json({ message: "API berhasil berjalan 🚀" });
+});
+
+// jalankan server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+console.log(`Server running on port ${PORT}`);
+});
+
+
+
+Membuat HashPassword manual dari node
+node
+> require("bcryptjs").hashSync("passwordkamu", 10)

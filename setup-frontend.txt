@@ -1,0 +1,48 @@
+SET TUP FRONT END
+
+
+Setup react
+npm create vite@latest client
+
+cd client
+npm install
+
+
+
+Setup Tailwind
+npm install -D tailwindcss@3.4.13 postcss autoprefixer
+
+npx tailwindcss init -p
+
+Edit file tailwind.config.js:
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+
+
+Edit file src/index.css dan ubah isinya jadi:
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+npm run dev
+
+
+koneksi frontend to backend
+buat file api.js di dalam src
+
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://localhost:5000/api",
+});
+
+export default api;
