@@ -3,7 +3,6 @@ import db from "../db/connection.js";
 export const createOrder = (req, res) => {
   const userId = req.user.id;
 
-  // ambil cart user
   db.query(
     `SELECT carts.id as cart_id, cart_items.product_id, cart_items.quantity, products.price
      FROM carts
@@ -19,7 +18,6 @@ export const createOrder = (req, res) => {
       }
 
       let total = 0;
-
       cartItems.forEach((item) => {
         total += item.price * item.quantity;
       });
@@ -47,10 +45,28 @@ export const createOrder = (req, res) => {
             (err) => {
               if (err) return res.status(500).json(err);
 
-              res.json({
-                message: "Order berhasil dibuat",
-                order_code: orderCode,
-              });
+              const cartId = cartItems[0].cart_id;
+
+              db.query(
+                "DELETE FROM cart_items WHERE cart_id = ?",
+                [cartId],
+                (err) => {
+                  if (err) return res.status(500).json(err);
+
+                  db.query(
+                    "DELETE FROM carts WHERE id = ?",
+                    [cartId],
+                    (err) => {
+                      if (err) return res.status(500).json(err);
+
+                      res.json({
+                        message: "Order berhasil dibuat",
+                        order_code: orderCode,
+                      });
+                    }
+                  );
+                }
+              );
             }
           );
         }
