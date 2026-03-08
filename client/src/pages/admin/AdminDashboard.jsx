@@ -13,41 +13,45 @@ export default function AdminDashboard() {
   const [recentOrders, setRecentOrders] = useState([]);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-  const fetchData = async () => {
-    try {
+        const productsRes = await axios.get(
+          "http://localhost:5000/api/products",
+        );
 
-      const token = localStorage.getItem("token");
+        const ordersRes = await axios.get("http://localhost:5000/api/orders", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      const productsRes = await axios.get("http://localhost:5000/api/products");
+        const usersRes = await axios.get(
+          "http://localhost:5000/api/admin/users",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
 
-      const ordersRes = await axios.get("http://localhost:5000/api/orders", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-      const usersRes  = await axios.get("http://localhost:5000/api/admin/users", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+        setStatsData({
+          products: productsRes.data.length,
+          orders: ordersRes.data.length,
+          users: usersRes.data.length,
+          payments: 120,
+        });
 
-      setStatsData({
-        products: productsRes.data.length,
-        orders: ordersRes.data.length,
-        users: usersRes.data.length,
-        payments: 120
-      });
+        // ambil 5 order terbaru
+        setRecentOrders(ordersRes.data.slice(0, 5));
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  fetchData();
-
-}, []);
+    fetchData();
+  }, []);
 
   const stats = [
     {
@@ -489,40 +493,51 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {recentOrders.map((o, i) => {
-                  const s = statusStyle[o.status];
+                {recentOrders.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="5"
+                      style={{ textAlign: "center", padding: "20px" }}
+                    >
+                      Belum ada pesanan
+                    </td>
+                  </tr>
+                ) : (
+                  recentOrders.map((o, i) => {
+                    const s = statusStyle[o.status] || statusStyle["Pending"];
 
-                  return (
-                    <tr key={i}>
-                      <td>
-                        <span className="order-id">{o.id}</span>
-                      </td>
+                    return (
+                      <tr key={i}>
+                        <td>
+                          <span className="order-id">{o.id}</span>
+                        </td>
 
-                      <td>{o.email}</td>
+                        <td>{o.email}</td>
 
-                      <td style={{ color: "#92a8b5", fontSize: "13px" }}>
-                        {o.order_code}
-                      </td>
+                        <td style={{ color: "#92a8b5", fontSize: "13px" }}>
+                          {o.order_code}
+                        </td>
 
-                      <td style={{ fontWeight: 700, color: "#0f1923" }}>
-                        Rp {o.total_amount}
-                      </td>
+                        <td style={{ fontWeight: 700, color: "#0f1923" }}>
+                          Rp {o.total_amount}
+                        </td>
 
-                      <td>
-                        <span
-                          className="status-badge"
-                          style={{ background: s.bg, color: s.color }}
-                        >
+                        <td>
                           <span
-                            className="status-dot"
-                            style={{ background: s.dot }}
-                          />
-                          {o.status}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
+                            className="status-badge"
+                            style={{ background: s.bg, color: s.color }}
+                          >
+                            <span
+                              className="status-dot"
+                              style={{ background: s.dot }}
+                            />
+                            {o.status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
