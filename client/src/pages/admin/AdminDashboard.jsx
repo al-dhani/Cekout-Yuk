@@ -1,184 +1,201 @@
 import AdminLayout from "../../components/AdminLayout";
-
-const stats = [
-  {
-    label: "Total Products",
-    value: "248",
-    change: "+12%",
-    positive: true,
-    icon: (
-      <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-        <path
-          d="M20 7H4a1 1 0 00-1 1v11a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1z"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-    gradient: "linear-gradient(135deg, #20d2b4 0%, #38b2e8 100%)",
-    glow: "rgba(32,210,180,0.25)",
-  },
-  {
-    label: "Total Orders",
-    value: "1,340",
-    change: "+8%",
-    positive: true,
-    icon: (
-      <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-        <path
-          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-        <rect
-          x="9"
-          y="3"
-          width="6"
-          height="4"
-          rx="1"
-          stroke="currentColor"
-          strokeWidth="1.8"
-        />
-        <path
-          d="M9 12h6M9 16h4"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-    gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-    glow: "rgba(240,147,251,0.25)",
-  },
-  {
-    label: "Total Users",
-    value: "5,892",
-    change: "+21%",
-    positive: true,
-    icon: (
-      <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-        <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.8" />
-        <path
-          d="M3 21v-1a6 6 0 016-6h0a6 6 0 016 6v1"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-        <path
-          d="M16 3.13a4 4 0 010 7.75M21 21v-1a4 4 0 00-3-3.85"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-    gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-    glow: "rgba(79,172,254,0.25)",
-  },
-  {
-    label: "Categories",
-    value: "34",
-    change: "-2%",
-    positive: false,
-    icon: (
-      <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-        <rect
-          x="3"
-          y="3"
-          width="7"
-          height="7"
-          rx="1.5"
-          stroke="currentColor"
-          strokeWidth="1.8"
-        />
-        <rect
-          x="14"
-          y="3"
-          width="7"
-          height="7"
-          rx="1.5"
-          stroke="currentColor"
-          strokeWidth="1.8"
-        />
-        <rect
-          x="3"
-          y="14"
-          width="7"
-          height="7"
-          rx="1.5"
-          stroke="currentColor"
-          strokeWidth="1.8"
-        />
-        <rect
-          x="14"
-          y="14"
-          width="7"
-          height="7"
-          rx="1.5"
-          stroke="currentColor"
-          strokeWidth="1.8"
-        />
-      </svg>
-    ),
-    gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-    glow: "rgba(250,112,154,0.25)",
-  },
-];
-
-const recentOrders = [
-  {
-    id: "#ORD-001",
-    customer: "Budi Santoso",
-    product: "Nike Air Max 270",
-    amount: "Rp 1.850.000",
-    status: "Completed",
-  },
-  {
-    id: "#ORD-002",
-    customer: "Siti Rahayu",
-    product: "Adidas Ultraboost 22",
-    amount: "Rp 2.200.000",
-    status: "Processing",
-  },
-  {
-    id: "#ORD-003",
-    customer: "Ahmad Fauzi",
-    product: "Converse Chuck Taylor",
-    amount: "Rp 750.000",
-    status: "Shipped",
-  },
-  {
-    id: "#ORD-004",
-    customer: "Dewi Lestari",
-    product: "New Balance 574",
-    amount: "Rp 1.100.000",
-    status: "Pending",
-  },
-  {
-    id: "#ORD-005",
-    customer: "Rizky Pratama",
-    product: "Vans Old Skool",
-    amount: "Rp 890.000",
-    status: "Completed",
-  },
-];
-
-const statusStyle = {
-  Completed: { bg: "rgba(32,210,180,0.12)", color: "#20d2b4", dot: "#20d2b4" },
-  Processing: { bg: "rgba(56,178,232,0.12)", color: "#38b2e8", dot: "#38b2e8" },
-  Shipped: { bg: "rgba(250,166,26,0.12)", color: "#f6a623", dot: "#f6a623" },
-  Pending: { bg: "rgba(240,147,251,0.12)", color: "#f093fb", dot: "#f093fb" },
-};
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function AdminDashboard() {
+  const [statsData, setStatsData] = useState({
+    products: 0,
+    orders: 0,
+    users: 0,
+    payments: 120,
+  });
+
+  const [recentOrders, setRecentOrders] = useState([]);
+
+  useEffect(() => {
+
+  const fetchData = async () => {
+    try {
+
+      const token = localStorage.getItem("token");
+
+      const productsRes = await axios.get("http://localhost:5000/api/products");
+
+      const ordersRes = await axios.get("http://localhost:5000/api/orders", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      const usersRes  = await axios.get("http://localhost:5000/api/admin/users", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      setStatsData({
+        products: productsRes.data.length,
+        orders: ordersRes.data.length,
+        users: usersRes.data.length,
+        payments: 120
+      });
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  fetchData();
+
+}, []);
+
+  const stats = [
+    {
+      label: "Total Products",
+      value: statsData.products,
+      change: "+12%",
+      positive: true,
+      icon: (
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+          <path
+            d="M20 7H4a1 1 0 00-1 1v11a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1z"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+        </svg>
+      ),
+      gradient: "linear-gradient(135deg, #20d2b4 0%, #38b2e8 100%)",
+      glow: "rgba(32,210,180,0.25)",
+    },
+    {
+      label: "Total Orders",
+      value: statsData.orders,
+      change: "+8%",
+      positive: true,
+      icon: (
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+          <path
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+          <rect
+            x="9"
+            y="3"
+            width="6"
+            height="4"
+            rx="1"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          />
+          <path
+            d="M9 12h6M9 16h4"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+        </svg>
+      ),
+      gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+      glow: "rgba(240,147,251,0.25)",
+    },
+    {
+      label: "Total Users",
+      value: statsData.users,
+      change: "+21%",
+      positive: true,
+      icon: (
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+          <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.8" />
+          <path
+            d="M3 21v-1a6 6 0 016-6h0a6 6 0 016 6v1"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+          <path
+            d="M16 3.13a4 4 0 010 7.75M21 21v-1a4 4 0 00-3-3.85"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+        </svg>
+      ),
+      gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+      glow: "rgba(79,172,254,0.25)",
+    },
+    {
+      label: "Payments",
+      value: statsData.payments,
+      change: "-2%",
+      positive: false,
+      icon: (
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+          <rect
+            x="3"
+            y="3"
+            width="7"
+            height="7"
+            rx="1.5"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          />
+          <rect
+            x="14"
+            y="3"
+            width="7"
+            height="7"
+            rx="1.5"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          />
+          <rect
+            x="3"
+            y="14"
+            width="7"
+            height="7"
+            rx="1.5"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          />
+          <rect
+            x="14"
+            y="14"
+            width="7"
+            height="7"
+            rx="1.5"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          />
+        </svg>
+      ),
+      gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+      glow: "rgba(250,112,154,0.25)",
+    },
+  ];
+
+  const statusStyle = {
+    Completed: {
+      bg: "rgba(32,210,180,0.12)",
+      color: "#20d2b4",
+      dot: "#20d2b4",
+    },
+    Processing: {
+      bg: "rgba(56,178,232,0.12)",
+      color: "#38b2e8",
+      dot: "#38b2e8",
+    },
+    Shipped: { bg: "rgba(250,166,26,0.12)", color: "#f6a623", dot: "#f6a623" },
+    Pending: { bg: "rgba(240,147,251,0.12)", color: "#f093fb", dot: "#f093fb" },
+  };
   return (
     <AdminLayout>
       <style>{`
@@ -474,18 +491,23 @@ export default function AdminDashboard() {
               <tbody>
                 {recentOrders.map((o, i) => {
                   const s = statusStyle[o.status];
+
                   return (
                     <tr key={i}>
                       <td>
                         <span className="order-id">{o.id}</span>
                       </td>
-                      <td>{o.customer}</td>
+
+                      <td>{o.email}</td>
+
                       <td style={{ color: "#92a8b5", fontSize: "13px" }}>
-                        {o.product}
+                        {o.order_code}
                       </td>
+
                       <td style={{ fontWeight: 700, color: "#0f1923" }}>
-                        {o.amount}
+                        Rp {o.total_amount}
                       </td>
+
                       <td>
                         <span
                           className="status-badge"
