@@ -2,13 +2,13 @@ import AdminSidebar from "./AdminSidebar";
 
 export default function AdminLayout({ children }) {
   return (
-    <div className="flex">
+    <div className="bg-gray-100 min-h-screen">
 
       {/* Sidebar */}
       <AdminSidebar />
 
       {/* Content */}
-      <div className="flex-1 p-6 bg-gray-100 min-h-screen">
+      <div className="ml-[240px] p-6 min-h-screen">
         {children}
       </div>
 
