@@ -11,6 +11,7 @@ export default function AdminDashboard() {
   });
 
   const [recentOrders, setRecentOrders] = useState([]);
+  const [salesSummary, setSalesSummary] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,6 +46,35 @@ export default function AdminDashboard() {
 
         // ambil 5 order terbaru
         setRecentOrders(ordersRes.data.slice(0, 5));
+        const orders = ordersRes.data;
+
+        const completed = orders.filter((o) => o.status === "Completed").length;
+        const processing = orders.filter(
+          (o) => o.status === "Processing",
+        ).length;
+        const pending = orders.filter((o) => o.status === "Pending").length;
+
+        const total = orders.length || 1;
+
+        const summary = [
+          {
+            label: "Selesai",
+            pct: Math.round((completed / total) * 100),
+            color: "#20d2b4",
+          },
+          {
+            label: "Diproses",
+            pct: Math.round((processing / total) * 100),
+            color: "#38b2e8",
+          },
+          {
+            label: "Pending",
+            pct: Math.round((pending / total) * 100),
+            color: "#f093fb",
+          },
+        ];
+
+        setSalesSummary(summary);
       } catch (error) {
         console.log(error);
       }
@@ -545,11 +575,7 @@ export default function AdminDashboard() {
           <div className="right-panel">
             <div className="summary-card">
               <div className="summary-title">Ringkasan Penjualan</div>
-              {[
-                { label: "Selesai", value: "68%", color: "#20d2b4", pct: 68 },
-                { label: "Diproses", value: "20%", color: "#38b2e8", pct: 20 },
-                { label: "Pending", value: "12%", color: "#f093fb", pct: 12 },
-              ].map((r, i) => (
+              {salesSummary.map((r, i) => (
                 <div key={i}>
                   <div className="summary-row">
                     <span className="summary-label">
@@ -559,7 +585,7 @@ export default function AdminDashboard() {
                       />
                       {r.label}
                     </span>
-                    <span className="summary-value">{r.value}</span>
+                    <span className="summary-value">{r.pct}%</span>
                   </div>
                   <div
                     className="progress-bar-wrap"
