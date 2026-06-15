@@ -2,7 +2,11 @@ import db from "../db/connection.js";
 
 // CREATE PRODUCT (ADMIN)
 export const createProduct = (req, res) => {
-  const { category_id, name, description, price, stock, image } = req.body;
+  const { category_id, name, description, price, stock } = req.body;
+
+  const image = req.file
+    ? `http://localhost:5000/uploads/${req.file.filename}`
+    : null;
 
   if (!name || !price) {
     return res.status(400).json({ message: "Name & Price wajib diisi" });
@@ -19,7 +23,9 @@ export const createProduct = (req, res) => {
     (err, result) => {
       if (err) return res.status(500).json(err);
 
-      res.status(201).json({ message: "Produk berhasil dibuat 🔥" });
+      res.status(201).json({
+        message: "Produk berhasil dibuat 🔥"
+      });
     }
   );
 };
@@ -51,7 +57,11 @@ export const getProductById = (req, res) => {
 // UPDATE PRODUCT (ADMIN)
 export const updateProduct = (req, res) => {
   const { id } = req.params;
-  const { category_id, name, description, price, stock, image } = req.body;
+  const { category_id, name, description, price, stock } = req.body;
+
+  const image = req.file
+    ? `http://localhost:5000/uploads/${req.file.filename}`
+    : req.body.image;
 
   const sql = `
     UPDATE products
@@ -65,7 +75,9 @@ export const updateProduct = (req, res) => {
     (err, result) => {
       if (err) return res.status(500).json(err);
 
-      res.json({ message: "Produk berhasil diupdate 🔥" });
+      res.json({
+        message: "Produk berhasil diupdate 🔥"
+      });
     }
   );
 };

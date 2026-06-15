@@ -15,7 +15,7 @@ export default function AdminOrders() {
   const [items, setItems] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   const getOrders = async () => {
     try {

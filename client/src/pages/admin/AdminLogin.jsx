@@ -20,8 +20,14 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password,
+      });
+
+      localStorage.setItem("adminToken", res.data.token);
+      localStorage.setItem("adminUser", JSON.stringify(res.data.user));
+
       navigate("/admin/dashboard");
     } catch (err) {
       alert("Login gagal. Periksa email dan password kamu.");
@@ -30,15 +36,49 @@ export default function AdminLogin() {
     }
   };
 
-  return THEME === "A" ? <ThemeA {...{ email, setEmail, password, setPassword, showPass, setShowPass, loading, handleLogin }} />
-                       : <ThemeB {...{ email, setEmail, password, setPassword, showPass, setShowPass, loading, handleLogin }} />;
+  return THEME === "A" ? (
+    <ThemeA
+      {...{
+        email,
+        setEmail,
+        password,
+        setPassword,
+        showPass,
+        setShowPass,
+        loading,
+        handleLogin,
+      }}
+    />
+  ) : (
+    <ThemeB
+      {...{
+        email,
+        setEmail,
+        password,
+        setPassword,
+        showPass,
+        setShowPass,
+        loading,
+        handleLogin,
+      }}
+    />
+  );
 }
 
 /* ─────────────────────────────────────────
    OPSI A — Glassmorphism + Background Landscape
    Warna: Teal-blue matching dashboard
 ───────────────────────────────────────── */
-function ThemeA({ email, setEmail, password, setPassword, showPass, setShowPass, loading, handleLogin }) {
+function ThemeA({
+  email,
+  setEmail,
+  password,
+  setPassword,
+  showPass,
+  setShowPass,
+  loading,
+  handleLogin,
+}) {
   return (
     <>
       <style>{`
@@ -209,60 +249,138 @@ function ThemeA({ email, setEmail, password, setPassword, showPass, setShowPass,
 
       <div className="la-root">
         {/* SVG Landscape Background */}
-        <svg className="la-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          className="la-bg"
+          viewBox="0 0 1440 900"
+          preserveAspectRatio="xMidYMid slice"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <defs>
             <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#c8e8f5"/>
-              <stop offset="60%" stopColor="#b0d8f0"/>
-              <stop offset="100%" stopColor="#9ecde8"/>
+              <stop offset="0%" stopColor="#c8e8f5" />
+              <stop offset="60%" stopColor="#b0d8f0" />
+              <stop offset="100%" stopColor="#9ecde8" />
             </linearGradient>
             <linearGradient id="m1" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#7ab8d8"/>
-              <stop offset="100%" stopColor="#5a9bbf"/>
+              <stop offset="0%" stopColor="#7ab8d8" />
+              <stop offset="100%" stopColor="#5a9bbf" />
             </linearGradient>
             <linearGradient id="m2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#5a96b8"/>
-              <stop offset="100%" stopColor="#3a7a9e"/>
+              <stop offset="0%" stopColor="#5a96b8" />
+              <stop offset="100%" stopColor="#3a7a9e" />
             </linearGradient>
             <linearGradient id="m3" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3a789a"/>
-              <stop offset="100%" stopColor="#1e5a7a"/>
+              <stop offset="0%" stopColor="#3a789a" />
+              <stop offset="100%" stopColor="#1e5a7a" />
             </linearGradient>
             <linearGradient id="fg" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#0f2a3a"/>
-              <stop offset="100%" stopColor="#08161f"/>
+              <stop offset="0%" stopColor="#0f2a3a" />
+              <stop offset="100%" stopColor="#08161f" />
             </linearGradient>
           </defs>
           {/* Sky */}
-          <rect width="1440" height="900" fill="url(#sky)"/>
+          <rect width="1440" height="900" fill="url(#sky)" />
           {/* Sun */}
-          <circle cx="720" cy="200" r="90" fill="rgba(255,255,255,0.7)"/>
-          <circle cx="720" cy="200" r="65" fill="rgba(255,255,255,0.9)"/>
+          <circle cx="720" cy="200" r="90" fill="rgba(255,255,255,0.7)" />
+          <circle cx="720" cy="200" r="65" fill="rgba(255,255,255,0.9)" />
           {/* Clouds */}
-          <ellipse cx="300" cy="160" rx="120" ry="40" fill="rgba(255,255,255,0.6)"/>
-          <ellipse cx="360" cy="145" rx="80" ry="35" fill="rgba(255,255,255,0.7)"/>
-          <ellipse cx="1100" cy="130" rx="140" ry="45" fill="rgba(255,255,255,0.55)"/>
-          <ellipse cx="1060" cy="115" rx="90" ry="35" fill="rgba(255,255,255,0.65)"/>
-          <ellipse cx="600" cy="100" rx="80" ry="28" fill="rgba(255,255,255,0.5)"/>
+          <ellipse
+            cx="300"
+            cy="160"
+            rx="120"
+            ry="40"
+            fill="rgba(255,255,255,0.6)"
+          />
+          <ellipse
+            cx="360"
+            cy="145"
+            rx="80"
+            ry="35"
+            fill="rgba(255,255,255,0.7)"
+          />
+          <ellipse
+            cx="1100"
+            cy="130"
+            rx="140"
+            ry="45"
+            fill="rgba(255,255,255,0.55)"
+          />
+          <ellipse
+            cx="1060"
+            cy="115"
+            rx="90"
+            ry="35"
+            fill="rgba(255,255,255,0.65)"
+          />
+          <ellipse
+            cx="600"
+            cy="100"
+            rx="80"
+            ry="28"
+            fill="rgba(255,255,255,0.5)"
+          />
           {/* Far mountains */}
-          <path d="M0 520 L180 320 L360 480 L540 280 L720 420 L900 260 L1080 400 L1260 300 L1440 440 L1440 900 L0 900Z" fill="url(#m1)" opacity="0.7"/>
+          <path
+            d="M0 520 L180 320 L360 480 L540 280 L720 420 L900 260 L1080 400 L1260 300 L1440 440 L1440 900 L0 900Z"
+            fill="url(#m1)"
+            opacity="0.7"
+          />
           {/* Mid mountains */}
-          <path d="M0 620 L200 420 L400 560 L600 380 L800 520 L1000 360 L1200 500 L1440 400 L1440 900 L0 900Z" fill="url(#m2)" opacity="0.8"/>
+          <path
+            d="M0 620 L200 420 L400 560 L600 380 L800 520 L1000 360 L1200 500 L1440 400 L1440 900 L0 900Z"
+            fill="url(#m2)"
+            opacity="0.8"
+          />
           {/* Near mountains */}
-          <path d="M0 700 L160 540 L320 640 L500 480 L680 600 L860 460 L1040 580 L1220 500 L1440 560 L1440 900 L0 900Z" fill="url(#m3)"/>
+          <path
+            d="M0 700 L160 540 L320 640 L500 480 L680 600 L860 460 L1040 580 L1220 500 L1440 560 L1440 900 L0 900Z"
+            fill="url(#m3)"
+          />
           {/* Foreground trees left */}
-          <path d="M-20 900 L40 680 L100 900Z" fill="url(#fg)"/>
-          <path d="M30 900 L80 720 L130 900Z" fill="url(#fg)" opacity="0.8"/>
-          <path d="M70 900 L110 760 L150 900Z" fill="url(#fg)" opacity="0.6"/>
+          <path d="M-20 900 L40 680 L100 900Z" fill="url(#fg)" />
+          <path d="M30 900 L80 720 L130 900Z" fill="url(#fg)" opacity="0.8" />
+          <path d="M70 900 L110 760 L150 900Z" fill="url(#fg)" opacity="0.6" />
           {/* Foreground trees right */}
-          <path d="M1300 900 L1360 680 L1420 900Z" fill="url(#fg)"/>
-          <path d="M1330 900 L1380 720 L1440 900Z" fill="url(#fg)" opacity="0.8"/>
-          <path d="M1280 900 L1320 760 L1380 900Z" fill="url(#fg)" opacity="0.6"/>
+          <path d="M1300 900 L1360 680 L1420 900Z" fill="url(#fg)" />
+          <path
+            d="M1330 900 L1380 720 L1440 900Z"
+            fill="url(#fg)"
+            opacity="0.8"
+          />
+          <path
+            d="M1280 900 L1320 760 L1380 900Z"
+            fill="url(#fg)"
+            opacity="0.6"
+          />
           {/* Birds */}
-          <path d="M220 280 Q225 275 230 280 Q235 275 240 280" stroke="#1a3a4a" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M260 260 Q265 255 270 260 Q275 255 280 260" stroke="#1a3a4a" strokeWidth="2" fill="none" opacity="0.5"/>
-          <path d="M1150 220 Q1155 215 1160 220 Q1165 215 1170 220" stroke="#1a3a4a" strokeWidth="2" fill="none" opacity="0.6"/>
-          <path d="M1190 240 Q1195 235 1200 240 Q1205 235 1210 240" stroke="#1a3a4a" strokeWidth="2" fill="none" opacity="0.45"/>
+          <path
+            d="M220 280 Q225 275 230 280 Q235 275 240 280"
+            stroke="#1a3a4a"
+            strokeWidth="2"
+            fill="none"
+            opacity="0.6"
+          />
+          <path
+            d="M260 260 Q265 255 270 260 Q275 255 280 260"
+            stroke="#1a3a4a"
+            strokeWidth="2"
+            fill="none"
+            opacity="0.5"
+          />
+          <path
+            d="M1150 220 Q1155 215 1160 220 Q1165 215 1170 220"
+            stroke="#1a3a4a"
+            strokeWidth="2"
+            fill="none"
+            opacity="0.6"
+          />
+          <path
+            d="M1190 240 Q1195 235 1200 240 Q1205 235 1210 240"
+            stroke="#1a3a4a"
+            strokeWidth="2"
+            fill="none"
+            opacity="0.45"
+          />
         </svg>
 
         {/* Blobs */}
@@ -275,10 +393,17 @@ function ThemeA({ email, setEmail, password, setPassword, showPass, setShowPass,
           <div className="la-logo">
             <div className="la-logo-mark">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M4 6h16M4 12h10M4 18h13" stroke="#0f1923" strokeWidth="2.5" strokeLinecap="round"/>
+                <path
+                  d="M4 6h16M4 12h10M4 18h13"
+                  stroke="#0f1923"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
               </svg>
             </div>
-            <span className="la-logo-text">Cekout<span>Yuk</span></span>
+            <span className="la-logo-text">
+              Cekout<span>Yuk</span>
+            </span>
           </div>
 
           <div className="la-title">Selamat Datang 👋</div>
@@ -298,8 +423,17 @@ function ThemeA({ email, setEmail, password, setPassword, showPass, setShowPass,
                 />
                 <span className="la-input-icon">
                   <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                    <path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.8"/>
-                    <path d="M22 6l-10 7L2 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                    <path
+                      d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+                    <path
+                      d="M22 6l-10 7L2 6"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                    />
                   </svg>
                 </span>
               </div>
@@ -316,16 +450,39 @@ function ThemeA({ email, setEmail, password, setPassword, showPass, setShowPass,
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                <span className="la-input-icon" onClick={() => setShowPass(!showPass)}>
+                <span
+                  className="la-input-icon"
+                  onClick={() => setShowPass(!showPass)}
+                >
                   {showPass ? (
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-                      <path d="M1 1l22 22" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                      <path
+                        d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
+                      <path
+                        d="M1 1l22 22"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
                     </svg>
                   ) : (
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="1.8"/>
-                      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8"/>
+                      <path
+                        d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                      />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="3"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                      />
                     </svg>
                   )}
                 </span>
@@ -347,7 +504,16 @@ function ThemeA({ email, setEmail, password, setPassword, showPass, setShowPass,
    OPSI B — Dark Premium (matching sidebar)
    Warna: Dark #0f1923 matching sidebar admin
 ───────────────────────────────────────── */
-function ThemeB({ email, setEmail, password, setPassword, showPass, setShowPass, loading, handleLogin }) {
+function ThemeB({
+  email,
+  setEmail,
+  password,
+  setPassword,
+  showPass,
+  setShowPass,
+  loading,
+  handleLogin,
+}) {
   return (
     <>
       <style>{`
@@ -519,10 +685,17 @@ function ThemeB({ email, setEmail, password, setPassword, showPass, setShowPass,
           <div className="lb-logo">
             <div className="lb-logo-mark">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M4 6h16M4 12h10M4 18h13" stroke="#0f1923" strokeWidth="2.5" strokeLinecap="round"/>
+                <path
+                  d="M4 6h16M4 12h10M4 18h13"
+                  stroke="#0f1923"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
               </svg>
             </div>
-            <span className="lb-logo-text">Cekout<span>Yuk</span></span>
+            <span className="lb-logo-text">
+              Cekout<span>Yuk</span>
+            </span>
           </div>
 
           <div className="lb-title">Selamat Datang 👋</div>
@@ -542,8 +715,17 @@ function ThemeB({ email, setEmail, password, setPassword, showPass, setShowPass,
                 />
                 <span className="lb-input-icon">
                   <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                    <path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.8"/>
-                    <path d="M22 6l-10 7L2 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                    <path
+                      d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+                    <path
+                      d="M22 6l-10 7L2 6"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                    />
                   </svg>
                 </span>
               </div>
@@ -560,16 +742,39 @@ function ThemeB({ email, setEmail, password, setPassword, showPass, setShowPass,
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                <span className="lb-input-icon" onClick={() => setShowPass(!showPass)}>
+                <span
+                  className="lb-input-icon"
+                  onClick={() => setShowPass(!showPass)}
+                >
                   {showPass ? (
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-                      <path d="M1 1l22 22" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                      <path
+                        d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
+                      <path
+                        d="M1 1l22 22"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
                     </svg>
                   ) : (
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="1.8"/>
-                      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8"/>
+                      <path
+                        d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                      />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="3"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                      />
                     </svg>
                   )}
                 </span>

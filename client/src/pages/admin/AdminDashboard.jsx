@@ -16,7 +16,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("adminToken");
 
         const productsRes = await axios.get(
           "http://localhost:5000/api/products",

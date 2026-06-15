@@ -6,10 +6,16 @@ export default function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
-    name: "", description: "", price: "", stock: "", category_id: "", image: ""
+    name: "",
+    description: "",
+    price: "",
+    stock: "",
+    category_id: "",
+    image: "",
   });
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [imagePreview, setImagePreview] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -17,64 +23,138 @@ export default function AdminProducts() {
     try {
       const res = await axios.get("http://localhost:5000/api/products");
       setProducts(res.data);
-    } catch (err) { console.log(err); }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const getCategories = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/categories");
       setCategories(res.data);
-    } catch (err) { console.log(err); }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  useEffect(() => { getProducts(); getCategories(); }, []);
+  useEffect(() => {
+    getProducts();
+    getCategories();
+  }, []);
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    setFormData({
+      ...formData,
+      image: file,
+    });
+
+    setImagePreview(URL.createObjectURL(file));
+  };
 
   const resetForm = () => {
-    setFormData({ name: "", description: "", price: "", stock: "", category_id: "", image: "" });
+    setFormData({
+      name: "",
+      description: "",
+      price: "",
+      stock: "",
+      category_id: "",
+      image: "",
+    });
     setEditingId(null);
     setShowForm(false);
   };
 
   const addProduct = async () => {
-    try {
-      await axios.post("http://localhost:5000/api/products", formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      resetForm();
-      getProducts();
-    } catch (err) { console.log(err); }
-  };
+  try {
+    const data = new FormData();
+
+    data.append("name", formData.name);
+    data.append("description", formData.description);
+    data.append("price", formData.price);
+    data.append("stock", formData.stock);
+    data.append("category_id", formData.category_id);
+    data.append("image", formData.image);
+
+    await axios.post(
+      "http://localhost:5000/api/products",
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    resetForm();
+    getProducts();
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   const startEdit = (product) => {
     setEditingId(product.id);
     setFormData({
-      name: product.name, description: product.description,
-      price: product.price, stock: product.stock,
-      category_id: product.category_id, image: product.image
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      stock: product.stock,
+      category_id: product.category_id,
+      image: product.image,
     });
     setShowForm(true);
   };
 
   const updateProduct = async () => {
-    try {
-      await axios.put(`http://localhost:5000/api/products/${editingId}`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      resetForm();
-      getProducts();
-    } catch (err) { console.log(err); }
-  };
+  try {
+    const data = new FormData();
+
+    data.append("name", formData.name);
+    data.append("description", formData.description);
+    data.append("price", formData.price);
+    data.append("stock", formData.stock);
+    data.append("category_id", formData.category_id);
+
+    if (formData.image instanceof File) {
+      data.append("image", formData.image);
+    }
+
+    await axios.put(
+      `http://localhost:5000/api/products/${editingId}`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    resetForm();
+    getProducts();
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   const deleteProduct = async (id) => {
     if (!window.confirm("Yakin hapus product?")) return;
     try {
       await axios.delete(`http://localhost:5000/api/products/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       getProducts();
-    } catch (err) { console.log(err); }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -416,14 +496,24 @@ export default function AdminProducts() {
           <div className="prod-header-left">
             <div className="prod-greeting">📦 Manajemen Produk</div>
             <div className="prod-title">Products</div>
-            <div className="prod-subtitle">Kelola semua produk toko kamu di sini</div>
+            <div className="prod-subtitle">
+              Kelola semua produk toko kamu di sini
+            </div>
           </div>
           <button
             className="btn-add-product"
-            onClick={() => { resetForm(); setShowForm(true); }}
+            onClick={() => {
+              resetForm();
+              setShowForm(true);
+            }}
           >
             <svg width="15" height="15" fill="none" viewBox="0 0 24 24">
-              <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+              <path
+                d="M12 5v14M5 12h14"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
             </svg>
             Tambah Produk
           </button>
@@ -439,48 +529,119 @@ export default function AdminProducts() {
             <div className="form-grid">
               <div className="form-group">
                 <label className="form-label">Nama Produk</label>
-                <input className="form-input" type="text" name="name" placeholder="Masukkan nama produk" value={formData.name} onChange={handleChange} />
+                <input
+                  className="form-input"
+                  type="text"
+                  name="name"
+                  placeholder="Masukkan nama produk"
+                  value={formData.name}
+                  onChange={handleChange}
+                />
               </div>
               <div className="form-group">
                 <label className="form-label">Harga</label>
-                <input className="form-input" type="number" name="price" placeholder="0" value={formData.price} onChange={handleChange} />
+                <input
+                  className="form-input"
+                  type="number"
+                  name="price"
+                  placeholder="0"
+                  value={formData.price}
+                  onChange={handleChange}
+                />
               </div>
               <div className="form-group">
                 <label className="form-label">Stok</label>
-                <input className="form-input" type="number" name="stock" placeholder="0" value={formData.stock} onChange={handleChange} />
+                <input
+                  className="form-input"
+                  type="number"
+                  name="stock"
+                  placeholder="0"
+                  value={formData.stock}
+                  onChange={handleChange}
+                />
               </div>
               <div className="form-group">
                 <label className="form-label">Kategori</label>
-                <select className="form-select" name="category_id" value={formData.category_id} onChange={handleChange}>
+                <select
+                  className="form-select"
+                  name="category_id"
+                  value={formData.category_id}
+                  onChange={handleChange}
+                >
                   <option value="">Pilih Kategori</option>
                   {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
                   ))}
                 </select>
               </div>
               <div className="form-group">
-                <label className="form-label">URL Gambar</label>
-                <input className="form-input" type="text" name="image" placeholder="https://..." value={formData.image} onChange={handleChange} />
+                <label className="form-label">Gambar Produk</label>
+
+                <input
+                  className="form-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover",
+                      marginTop: "10px",
+                      borderRadius: "10px",
+                    }}
+                  />
+                )}
               </div>
               <div className="form-group full">
                 <label className="form-label">Deskripsi</label>
-                <input className="form-input" type="text" name="description" placeholder="Deskripsi singkat produk..." value={formData.description} onChange={handleChange} />
+                <input
+                  className="form-input"
+                  type="text"
+                  name="description"
+                  placeholder="Deskripsi singkat produk..."
+                  value={formData.description}
+                  onChange={handleChange}
+                />
               </div>
             </div>
             <div className="form-actions">
-              <button className="btn-submit cancel" onClick={resetForm}>Batal</button>
-              <button className="btn-submit save" onClick={editingId ? updateProduct : addProduct}>
+              <button className="btn-submit cancel" onClick={resetForm}>
+                Batal
+              </button>
+              <button
+                className="btn-submit save"
+                onClick={editingId ? updateProduct : addProduct}
+              >
                 {editingId ? (
                   <>
                     <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
-                      <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path
+                        d="M20 6L9 17l-5-5"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                     Simpan Perubahan
                   </>
                 ) : (
                   <>
                     <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
-                      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                      <path
+                        d="M12 5v14M5 12h14"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                      />
                     </svg>
                     Tambah Produk
                   </>
@@ -514,25 +675,58 @@ export default function AdminProducts() {
                   <td colSpan="7">
                     <div className="empty-state">
                       <div className="empty-state-icon">📭</div>
-                      <div className="empty-state-text">Belum ada produk. Tambahkan produk pertama kamu!</div>
+                      <div className="empty-state-text">
+                        Belum ada produk. Tambahkan produk pertama kamu!
+                      </div>
                     </div>
                   </td>
                 </tr>
               ) : (
                 products.map((product) => {
-                  const category = categories.find((c) => c.id === product.category_id);
+                  const category = categories.find(
+                    (c) => c.id === product.category_id,
+                  );
                   return (
                     <tr key={product.id}>
-                      <td><span className="prod-id">#{product.id}</span></td>
+                      <td>
+                        <span className="prod-id">#{product.id}</span>
+                      </td>
                       <td>
                         {product.image ? (
-                          <img src={product.image} alt={product.name} className="prod-img" />
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="prod-img"
+                          />
                         ) : (
                           <div className="prod-img-placeholder">
-                            <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
-                              <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.5"/>
-                              <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
-                              <path d="M21 15l-5-5L5 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                            <svg
+                              width="18"
+                              height="18"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <rect
+                                x="3"
+                                y="3"
+                                width="18"
+                                height="18"
+                                rx="3"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                              />
+                              <circle
+                                cx="8.5"
+                                cy="8.5"
+                                r="1.5"
+                                fill="currentColor"
+                              />
+                              <path
+                                d="M21 15l-5-5L5 21"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                              />
                             </svg>
                           </div>
                         )}
@@ -542,27 +736,65 @@ export default function AdminProducts() {
                         <div className="prod-desc">{product.description}</div>
                       </td>
                       <td>
-                        <span className="cat-badge">{category ? category.name : "Unknown"}</span>
+                        <span className="cat-badge">
+                          {category ? category.name : "Unknown"}
+                        </span>
                       </td>
                       <td>
-                        <span className="price-text">Rp {Number(product.price).toLocaleString("id-ID")}</span>
+                        <span className="price-text">
+                          Rp {Number(product.price).toLocaleString("id-ID")}
+                        </span>
                       </td>
                       <td>
-                        <span className={`stock-badge ${product.stock > 10 ? "stock-ok" : "stock-low"}`}>
+                        <span
+                          className={`stock-badge ${product.stock > 10 ? "stock-ok" : "stock-low"}`}
+                        >
                           {product.stock} pcs
                         </span>
                       </td>
                       <td>
-                        <button className="action-btn edit" onClick={() => startEdit(product)}>
-                          <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
-                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        <button
+                          className="action-btn edit"
+                          onClick={() => startEdit(product)}
+                        >
+                          <svg
+                            width="12"
+                            height="12"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                            <path
+                              d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
                           </svg>
                           Edit
                         </button>
-                        <button className="action-btn delete" onClick={() => deleteProduct(product.id)}>
-                          <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
-                            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <button
+                          className="action-btn delete"
+                          onClick={() => deleteProduct(product.id)}
+                        >
+                          <svg
+                            width="12"
+                            height="12"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </svg>
                           Hapus
                         </button>

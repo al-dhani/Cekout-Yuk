@@ -14,7 +14,7 @@ export default function AdminUsers() {
     const fetchUsers = async () => {
       try {
         const res = await axios.get("http://localhost:5000/api/admin/users", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
         });
         setUsers(res.data);
       } catch (err) { console.error(err); }
